@@ -1,0 +1,110 @@
+{
+  "name": "AUTO FLOW",
+  "description": "โปรแกรม Windows (Python/Tkinter) คัดรูปถ่ายจอโฆษณาจาก NAS ด้วย AI แล้วทำเป็น PowerPoint รายงานประจำเดือน ในปุ่มเดียว",
+  "part_of": "InspectPilot (เครื่องมือรายงานจอโฆษณา)",
+  "runtime": {
+    "type": "desktop",
+    "os": "Windows",
+    "language": "Python 3.10+",
+    "libs": [
+      "tkinter",
+      "Pillow",
+      "python-pptx"
+    ],
+    "why_not_web": "ต้องอ่านรูปจาก NAS ภายในบริษัทโดยตรง"
+  },
+  "ai": {
+    "provider": "Google Gemini API (REST)",
+    "main_model": "gemini-3.5-flash-lite",
+    "fallback_models": [
+      "gemini-3.5-flash",
+      "gemini-3.1-flash-lite",
+      "gemini-2.5-flash-lite"
+    ],
+    "fallback_last": "เกณฑ์ในเครื่อง (ความคมชัด + ความสว่าง) เมื่อโควต้า AI หมด",
+    "input": "รูปทุกใบของ 1 จอ + ภาพย่อของซีนที่จอก่อนหน้าใช้ไปแล้ว",
+    "output_format": "JSON (responseMimeType=application/json)",
+    "prompt_version": "scene2",
+    "temperature": 0.2
+  },
+  "human_in_the_loop": {
+    "confidence_threshold": 70,
+    "rule": "AI มั่นใจต่ำกว่า 70% -> ให้คนกดยืนยัน/เลือกเอง",
+    "final_check": "คนตรวจหน้าสรุปก่อนส่งงาน"
+  },
+  "steps": [
+    {
+      "no": 1,
+      "name": "ดึงรูปจาก NAS",
+      "actor": "โปรแกรม",
+      "input": "ชื่อแคมเปญ + รายชื่อจอ (Master File)",
+      "output": "รูปทุกจอ + รายชื่อจอที่ขาดรูป"
+    },
+    {
+      "no": 2,
+      "name": "เลือกรูป + เช็กซีนไม่ซ้ำ",
+      "actor": "AI (Gemini)",
+      "input": "รูป 1–8 ใบของจอ + ซีนที่ใช้แล้ว",
+      "output": "best, confidence, reason, scene, dup, box"
+    },
+    {
+      "no": 3,
+      "name": "แต่งสี",
+      "actor": "AI แนะนำปุ่ม + โปรแกรมปรับ",
+      "input": "รูปที่เลือก",
+      "output": "รูปแต่งสีแล้ว (Auto/Balance/Brighter/Darker)"
+    },
+    {
+      "no": 4,
+      "name": "ครอป 16:9",
+      "actor": "โปรแกรม",
+      "input": "รูป",
+      "output": "รูป 16:9"
+    },
+    {
+      "no": 5,
+      "name": "รีไซส์",
+      "actor": "โปรแกรม",
+      "input": "รูป",
+      "output": "ขนาดตามแม่แบบรายงาน"
+    },
+    {
+      "no": 6,
+      "name": "ประทับวันที่ (Stamp)",
+      "actor": "โปรแกรม",
+      "input": "EXIF วันที่ถ่าย",
+      "output": "รูปมีวันที่"
+    },
+    {
+      "no": 7,
+      "name": "ตั้งชื่อไฟล์",
+      "actor": "โปรแกรม",
+      "input": "ชื่อไฟล์เดิม",
+      "output": "ตัดเลข (1) ท้ายชื่อ"
+    },
+    {
+      "no": 8,
+      "name": "ลง PowerPoint",
+      "actor": "โปรแกรม",
+      "input": "รูปทุกจอ",
+      "output": "ไฟล์ .pptx ตามช่องของแม่แบบ"
+    }
+  ],
+  "rules_enforced_by_program": [
+    "ห้ามใช้ซีนซ้ำกับจอก่อนหน้า ถ้ายังมีรูปซีนใหม่ให้เลือก (โปรแกรมเปลี่ยนรูปให้เองถ้า AI เลือกซีนซ้ำ)",
+    "ตัดรูปที่ไม่เห็นสินค้า/จอดำออก",
+    "ถ้าโปรแกรมแก้คำตอบ AI ต้องเขียนเหตุผลใหม่ลง log"
+  ],
+  "outputs": [
+    "Report.pptx",
+    "autoflow_log.csv (เหตุผลทุกจอ)"
+  ],
+  "evidence": {
+    "real_run_logs": [
+      "data/run1_autoflow_log.csv",
+      "data/run2_autoflow_log.csv"
+    ],
+    "model_test": "data/model_test_results.csv",
+    "source_code": "code/auto_flow.py"
+  }
+}

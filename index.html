@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AUTO FLOW · AI คัดรูปจอโฆษณาเป็นรายงาน PowerPoint</title>
+<meta name="description" content="AUTO FLOW: โปรแกรมที่ใช้ Google Gemini คัดรูปถ่ายจอโฆษณา เช็กซีนไม่ซ้ำ แต่งสี และสร้าง PowerPoint รายงานประจำเดือนในปุ่มเดียว พร้อม log การรันจริง ผลทดลองเทียบรุ่น AI และซอร์สโค้ด">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0F1419;--card:#161C28;--card2:#1A2030;--line:#2A3348;--ink:#E8ECF4;--dim:#A3AEC2;--mute:#7A869C;
+--pink:#EC4899;--amber:#FFB800;--cyan:#22D3EE;--green:#1FD1A0;--violet:#A78BFA;--orange:#FF8C42;--red:#FF6B78}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans Thai',Tahoma,sans-serif;font-size:17px;line-height:1.65}
+a{color:var(--cyan)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+nav{position:sticky;top:0;z-index:5;background:rgba(15,20,25,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:18px;align-items:center;height:56px;overflow-x:auto;white-space:nowrap}
+nav b{color:var(--ink);font-size:17px;margin-right:8px}
+nav a{color:var(--dim);text-decoration:none;font-size:15px}
+nav a:hover{color:var(--ink)}
+header{padding:64px 0 40px;background:radial-gradient(900px 400px at 10% 0%,rgba(236,72,153,.18),transparent 60%),radial-gradient(800px 380px at 95% 10%,rgba(34,211,238,.12),transparent 60%)}
+.kicker{color:var(--pink);font-weight:600;letter-spacing:.5px}
+h1{font-size:clamp(34px,6vw,56px);line-height:1.2;margin:10px 0 14px}
+h1 span{background:linear-gradient(90deg,var(--pink),var(--amber));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--dim);font-size:19px;max-width:820px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.badge{font-size:14px;padding:4px 12px;border-radius:999px;border:1px solid var(--line);background:var(--card2);color:var(--dim)}
+.badge.live{border-color:var(--green);color:var(--green)}
+.note{margin-top:22px;padding:14px 18px;border-left:4px solid var(--cyan);background:#10222A;border-radius:10px;color:var(--ink);font-size:15.5px;max-width:880px}
+section{padding:56px 0;border-top:1px solid var(--line)}
+h2{font-size:clamp(26px,4vw,34px);line-height:1.3;margin-bottom:8px}
+h2 small{display:block;font-size:15px;color:var(--mute);font-weight:600;letter-spacing:.5px;margin-bottom:4px}
+.sub{color:var(--dim);margin-bottom:26px;max-width:860px}
+.grid{display:grid;gap:16px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px}
+.card h3{font-size:19px;margin-bottom:6px}
+.card p,.card li{color:var(--dim);font-size:15.5px}
+.card ul{padding-left:18px}
+.num{font-size:34px;font-weight:700;line-height:1.15}
+.c-pink{color:var(--pink)}.c-amber{color:var(--amber)}.c-cyan{color:var(--cyan)}.c-green{color:var(--green)}.c-violet{color:var(--violet)}.c-orange{color:var(--orange)}
+.six .card{border-top:4px solid var(--line)}
+.six .card:nth-child(1){border-top-color:var(--red)}.six .card:nth-child(2){border-top-color:var(--orange)}.six .card:nth-child(3){border-top-color:var(--amber)}
+.six .card:nth-child(4){border-top-color:var(--violet)}.six .card:nth-child(5){border-top-color:var(--cyan)}.six .card:nth-child(6){border-top-color:var(--green)}
+.six .card .k{font-size:13px;color:var(--mute);font-weight:600}
+figure{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+figure img,figure video{display:block;width:100%;height:auto;background:#0B0F15}
+figcaption{padding:12px 16px;color:var(--dim);font-size:14.5px}
+.lbl{display:inline-block;font-size:12.5px;font-weight:700;padding:1px 9px;border-radius:6px;margin-right:6px;vertical-align:1px}
+.lbl.real{background:rgba(31,209,160,.15);color:var(--green)}
+.lbl.sim{background:rgba(255,140,66,.15);color:var(--orange)}
+.lbl.design{background:rgba(167,139,250,.15);color:var(--violet)}
+ol.steps{list-style:none;display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+ol.steps li{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+ol.steps li>b{flex:none;width:34px;height:34px;border-radius:10px;background:var(--card2);color:var(--amber);display:grid;place-items:center;font-size:17px}
+ol.steps h4{font-size:16.5px}
+ol.steps p{color:var(--dim);font-size:14.5px;line-height:1.5;overflow-wrap:anywhere}
+ol.steps li>div{min-width:0}
+.who{display:inline-block;font-size:12.5px;font-weight:700;color:var(--cyan);background:#10222A;border-radius:6px;padding:0 7px;margin-right:4px}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mute);font-weight:600;background:var(--card2);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+tr.pick td{background:rgba(255,184,0,.08);color:var(--amber);font-weight:600}
+td.why{color:var(--dim);min-width:300px}
+.tag{font-size:12.5px;font-weight:700;padding:1px 8px;border-radius:6px;white-space:nowrap}
+.tag.ai{background:rgba(255,184,0,.15);color:var(--amber)}
+.tag.human{background:rgba(34,211,238,.13);color:var(--cyan)}
+.tag.local{background:rgba(167,139,250,.15);color:var(--violet)}
+pre{background:#0B0F15;border:1px solid var(--line);border-radius:14px;padding:16px 18px;overflow-x:auto;font-family:'IBM Plex Mono','Courier New',monospace;font-size:13.5px;line-height:1.6;color:#C9D2E3;white-space:pre-wrap;word-break:break-word}
+.timeline{display:grid;gap:14px}
+.tl{display:grid;grid-template-columns:150px 1fr;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.tl .d{color:var(--amber);font-weight:700}
+.tl p{color:var(--dim);font-size:15.5px}
+.tl .fix{color:var(--green)}
+details{margin-top:14px}
+summary{cursor:pointer;color:var(--cyan);font-weight:600}
+.files a{display:flex;flex-direction:column;gap:2px;text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.files a span{color:var(--mute);font-size:14px}
+.files a:hover{border-color:var(--cyan)}
+footer{padding:36px 0 56px;color:var(--mute);font-size:14px;border-top:1px solid var(--line)}
+@media (min-width:900px){.six{grid-template-columns:repeat(3,1fr)}.files{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.tl{grid-template-columns:1fr;gap:4px}body{font-size:16px}}
+</style>
+</head>
+<body>
+<nav><div class="wrap"><b>AUTO FLOW</b>
+<a href="#usecase">Use Case</a><a href="#demo">ภาพการทำงาน</a><a href="#workflow">Workflow</a><a href="#ai">AI &amp; Prompt</a><a href="#test">ทดลองเทียบรุ่น</a><a href="#logs">Log รันจริง</a><a href="#impact">ผลลัพธ์</a><a href="#files">ไฟล์ &amp; โค้ด</a>
+</div></nav>
+
+<header><div class="wrap">
+<p class="kicker">AI Use Case · ทีมรายงานจอโฆษณา</p>
+<h1><span>AUTO FLOW</span><br>AI คัดรูปจอโฆษณา → รายงาน PowerPoint ในปุ่มเดียว</h1>
+<p class="lead">งานรายงานประจำเดือนต้องคัดรูปถ่ายจอโฆษณาราว 240 จอ เลือกรูปที่ดีที่สุดของแต่ละจอ ห้ามใช้ซีนโฆษณาซ้ำกับจอก่อนหน้า แต่งสี ประทับวันที่ แล้ววางลงสไลด์ AUTO FLOW ให้ Google Gemini ดูรูปจริงแล้วตัดสินแทนคน โดยมีโปรแกรมคุมกฎ และให้คนยืนยันเฉพาะจอที่ AI ไม่มั่นใจ</p>
+<div class="badges">
+<span class="badge live">● ใช้งานจริง ตั้งแต่ ก.ย. 2026</span>
+<span class="badge">Python · Tkinter · Pillow · python-pptx</span>
+<span class="badge">Google Gemini 3.5 Flash-Lite (หลัก)</span>
+<span class="badge">Human-in-the-loop · มั่นใจ &lt; 70% ให้คนยืนยัน</span>
+</div>
+<p class="note">AUTO FLOW เป็นโปรแกรมบน Windows เพราะต้องอ่านรูปจาก NAS ภายในบริษัทโดยตรง หน้านี้จึงเป็นหน้าโปรเจกต์ที่รวมหลักฐานการทำงานจริงไว้ให้ตรวจสอบได้ ได้แก่ ภาพหน้าจอจากการรันจริง, log ที่โปรแกรมบันทึกเองทุกจอ, ผลทดลองเทียบรุ่น AI 12 จอ, Workflow ในรูปแบบ JSON และซอร์สโค้ดส่วน AI ทุกภาพและตารางมีป้ายบอกว่าเป็น <span class="lbl real">ของจริง</span> <span class="lbl design">ภาพออกแบบ</span> หรือ <span class="lbl sim">จำลอง</span></p>
+</div></header>
+
+<section id="usecase"><div class="wrap">
+<h2><small>USE CASE · 6 องค์ประกอบ</small>สรุปในหน้าเดียว</h2>
+<p class="sub">ตัวเลขเวลาคิดจากงานจริง 240 จอต่อเดือน รายละเอียดต่อหน่วยอยู่ในส่วน <a href="#impact">ผลลัพธ์</a></p>
+<div class="grid g3 six">
+<div class="card"><p class="k">1 · PROBLEM</p><h3>คัดรูป 240 จอด้วยมือ</h3><p>คนต้องเปิดรูปทีละจอ เลือกรูปที่ดีที่สุด และจำเองว่าจอก่อนหน้าใช้ซีนไหนไปแล้ว ใช้เวลานานและพลาดซีนซ้ำได้ง่าย</p></div>
+<div class="card"><p class="k">2 · CURRENT PROCESS</p><h3>ทำมือ ~7–8 ชม. → InspectPilot ~20–25 นาที</h3><p>เราทำ InspectPilot มาช่วยดึงรูป ประทับวันที่ และสร้างสไลด์อัตโนมัติแล้ว แต่คนยังต้องนั่งเลือกรูปเองทุกจอ</p></div>
+<div class="card"><p class="k">3 · AI SOLUTION</p><h3>AI ดูรูปแล้วเลือกแทนคน</h3><p>Gemini ดูรูปทุกใบของจอ หากรอบจอ ตั้งชื่อซีน เทียบกับซีนที่ใช้แล้ว เลือกรูป และแนะนำการแต่งสี โปรแกรมบังคับกฎกันซีนซ้ำอีกชั้น</p></div>
+<div class="card"><p class="k">4 · AI TOOLS</p><h3>Gemini API + Claude</h3><p>ตอนรันงานใช้ Gemini 3.5 Flash-Lite และสลับไป 3.5 Flash ให้เองเมื่อ Google ยุ่ง ส่วน Claude ใช้ออกแบบหน้าจอ เขียนโค้ด และสร้างชุดทดลองเทียบรุ่น</p></div>
+<div class="card"><p class="k">5 · WORKFLOW</p><h3>8 ขั้น · ปุ่มเดียว</h3><p>ดึง → เลือก (AI) → แต่งสี → ครอป → รีไซส์ → Stamp → ชื่อไฟล์ → PPT ดูทีละขั้นได้ใน <a href="#workflow">Workflow</a></p></div>
+<div class="card"><p class="k">6 · EXPECTED IMPACT</p><h3>เวลาคนเหลือ ~10–15 นาที</h3><p>ลดลงราว 97% จากการทำมือ ค่า AI ราว 33 บาทต่องาน 240 จอ และทุกจอมีเหตุผลบันทึกไว้ใน CSV</p></div>
+</div>
+</div></section>
+
+<section id="demo"><div class="wrap">
+<h2><small>ภาพการทำงาน</small>หน้าจอ AUTO FLOW ระหว่างรันจริง</h2>
+<p class="sub">รอบเดโม 12 จอจาก NAS: AI เลือกเอง 11 จอ คนเลือก 0 จอ 10 จอแรกเสร็จใน 3:29 นาที (ราว 21 วินาทีต่อจอ รวมภาพเคลื่อนไหวที่แสดงบนจอ)</p>
+<figure><img src="assets/real_run_screen11.jpg" alt="หน้าจอ AUTO FLOW รันจริง จอที่ 11 จาก 12 รหัส DGT-A1046 AI เลือกรูปที่ 4 มั่นใจ 95% พร้อมเหตุผล และแสดงสายพาน 8 ขั้น" loading="lazy">
+<figcaption><span class="lbl real">ภาพจริง</span>จอที่ 11/12 (DGT-A1046) · ช่อง "ทำไมเลือกรูปนี้ · AI" แสดงเหตุผลจาก Gemini · ด้านล่างคือสายพาน 8 ขั้นของจอนี้ · มุมซ้ายล่างนับ AI เลือกเอง 11 / คนเลือก 0</figcaption></figure>
+<div class="grid g2" style="margin-top:16px">
+<figure><video controls preload="none" poster="assets/video_poster.jpg"><source src="assets/autoflow_simulation.mp4" type="video/mp4"></video>
+<figcaption><span class="lbl sim">วิดีโอจำลอง</span>ใช้โปรแกรมจริงกับรูปจริง 2 จอ แต่คำตอบของ AI ในวิดีโอเป็นคำตอบจำลอง เพื่อให้เห็นลำดับขั้นตอนครบใน 1 นาที</figcaption></figure>
+<figure><img src="assets/design_scene_check.jpg" alt="ภาพออกแบบหน้าจอเช็กซีน: ป้ายเลือก ผ่าน ซีนซ้ำ ตัดออก และคะแนนของแต่ละรูป" loading="lazy">
+<figcaption><span class="lbl design">ภาพออกแบบ</span>แบบหน้าจอเช็กซีนที่ใช้วางกติกา: เลือก / ผ่าน / ซีนซ้ำ / ตัดออก</figcaption></figure>
+</div>
+</div></section>
+
+<section id="workflow"><div class="wrap">
+<h2><small>WORKFLOW</small>8 ขั้นต่อจอ ใครทำอะไร</h2>
+<p class="sub">ทุกขั้นทำต่อเนื่องเองหลังกดปุ่มเดียว คนเข้ามาเฉพาะตอนตั้งค่าเริ่มงาน, ตอน AI มั่นใจต่ำกว่า 70% และตอนตรวจหน้าสรุป ดาวน์โหลด Workflow แบบ JSON: <a href="data/workflow.json">workflow.json</a></p>
+<ol class="steps">
+<li><b>1</b><div><h4>ดึงรูปจาก NAS</h4><p><span class='who'>โปรแกรม</span> ชื่อแคมเปญ + รายชื่อจอ (Master File) → รูปทุกจอ + รายชื่อจอที่ขาดรูป</p></div></li>
+<li><b>2</b><div><h4>เลือกรูป + เช็กซีนไม่ซ้ำ</h4><p><span class='who'>AI (Gemini)</span> รูป 1–8 ใบของจอ + ซีนที่ใช้แล้ว → best, confidence, reason, scene, dup, box</p></div></li>
+<li><b>3</b><div><h4>แต่งสี</h4><p><span class='who'>AI แนะนำปุ่ม + โปรแกรมปรับ</span> รูปที่เลือก → รูปแต่งสีแล้ว (Auto/Balance/Brighter/Darker)</p></div></li>
+<li><b>4</b><div><h4>ครอป 16:9</h4><p><span class='who'>โปรแกรม</span> รูป → รูป 16:9</p></div></li>
+<li><b>5</b><div><h4>รีไซส์</h4><p><span class='who'>โปรแกรม</span> รูป → ขนาดตามแม่แบบรายงาน</p></div></li>
+<li><b>6</b><div><h4>ประทับวันที่ (Stamp)</h4><p><span class='who'>โปรแกรม</span> EXIF วันที่ถ่าย → รูปมีวันที่</p></div></li>
+<li><b>7</b><div><h4>ตั้งชื่อไฟล์</h4><p><span class='who'>โปรแกรม</span> ชื่อไฟล์เดิม → ตัดเลข (1) ท้ายชื่อ</p></div></li>
+<li><b>8</b><div><h4>ลง PowerPoint</h4><p><span class='who'>โปรแกรม</span> รูปทุกจอ → ไฟล์ .pptx ตามช่องของแม่แบบ</p></div></li>
+</ol>
+<div class="grid g3" style="margin-top:16px">
+<div class="card"><h3 class="c-amber">AI ทำ</h3><p>ดูรูป หากรอบจอ ตั้งชื่อซีน เทียบกับซีนที่ใช้แล้ว ให้คะแนน เลือกรูป และแนะนำปุ่มแต่งสี</p></div>
+<div class="card"><h3 class="c-pink">โปรแกรมคุมกฎ</h3><p>ถ้า AI เลือกซีนซ้ำทั้งที่ยังมีซีนใหม่ โปรแกรมเปลี่ยนรูปให้และเขียนเหตุผลใหม่ลง log · ตัดรูปจอดำหรือไม่เห็นสินค้าออก</p></div>
+<div class="card"><h3 class="c-cyan">คนตรวจ</h3><p>ยืนยันจอที่ AI มั่นใจต่ำกว่า 70% และตรวจหน้าสรุปก่อนส่งงาน ถ้า AI ใช้ไม่ได้ (โควต้าหมด) โปรแกรมใช้เกณฑ์ในเครื่องแทน งานไม่หยุด</p></div>
+</div>
+</div></section>
+
+<section id="ai"><div class="wrap">
+<h2><small>AI &amp; PROMPT</small>คำสั่งที่ส่งให้ Gemini (จากซอร์สโค้ดจริง)</h2>
+<p class="sub">ส่งรูปทุกใบของ 1 จอ พร้อมภาพย่อของซีนที่จอก่อนหน้าใช้แล้ว แล้วบังคับให้ตอบเป็น JSON (<code>responseMimeType: application/json</code>, temperature 0.2) โปรแกรมจึงอ่านคำตอบได้ทุกครั้ง คำสั่งนี้คือค่าคงที่ <code>AF_AI_PROMPT_SCENE</code> ใน <a href="code/auto_flow.py">auto_flow.py</a> (เวอร์ชัน scene2) ช่อง {n} {used} {dup_rule} {pick_rule} โปรแกรมเติมให้ตอนรัน</p>
+<pre>คุณคือผู้ตรวจรูปถ่ายป้ายโฆษณา (จอ LED/บิลบอร์ด) สำหรับรายงานประจำเดือน
+งานนี้คือสินค้าเดียวกันหลายจอ แต่ละจอต้องใช้ &#x27;ซีน&#x27; ไม่ซ้ำกัน · ตอนนี้เป็นรูปของจอเดียวกัน {n} รูป (รูปที่ 1–{n})
+{used}ทำทุกรูป:
+1) box = กรอบของส่วนจอภาพที่แสดงโฆษณา [ymin, xmin, ymax, xmax] สเกล 0–1000
+2) scene = ชื่อซีนสั้นๆ ภาษาไทย 3–8 คำ บรรยาย &#x27;สิ่งที่เห็นบนจอ&#x27; ในจังหวะนั้น ห้ามใช้ชื่อสินค้า/แบรนด์/แคมเปญ (ทุกจอเป็นสินค้าเดียวกันอยู่แล้ว) ให้บอก: คน (จำนวน/ลักษณะ) หรือวัตถุหลัก + สีพื้นหลัง + ข้อความพาดหัวใหญ่ถ้ามี เช่น &quot;ชาย 2 คนคู่ขวด พื้นฟ้า&quot;, &quot;ขวดเดี่ยว ข้อความ 9.9 พื้นแดง&quot;, &quot;หญิงถือกล่อง พื้นชมพู&quot; · ไม่ต้องบอกท่าทาง (ท่าทางไม่ใช่ตัวแบ่งซีน) · ซีนเดียวกัน = คน/วัตถุหลักชุดเดิม + พื้นหลัง/โทนสีเดิม + ข้อความพาดหัวเดิม แม้ท่าทาง มุมกล้อง ขนาด หรือจังหวะภาพเคลื่อนไหวต่างกัน · คนละซีน = เปลี่ยนคน/วัตถุหลัก หรือเปลี่ยนพื้นหลัง/ฉาก หรือเปลี่ยนข้อความพาดหัว · ถ้าจอแบ่งหลายช่อง ให้วิเคราะห์เองว่าส่วนไหนเปลี่ยนตามจังหวะ แล้วใช้ส่วนนั้นตัดสินซีน ไม่ใช้ส่วนที่ค้างเหมือนกันทุกรูป
+3) no_product = true ถ้าจอดำ/กำลังเปลี่ยนภาพ/ไม่เห็นสินค้า
+4) score 0–100 = คุณภาพทั้งภาพ: เห็นจอ/สินค้าชัด แสงพอดี ไม่เบลอ ไม่มีสิ่งกีดขวางบังจอ เห็นทั้งจอ องค์ประกอบดี
+{dup_rule}แล้วเลือก best 1 รูป: {pick_rule}
+ตอบเป็น JSON เท่านั้น รูปแบบ: {&quot;best&quot;: &lt;เลขรูป 1-{n}&gt;, &quot;confidence&quot;: &lt;0-100&gt;, &quot;reason&quot;: &quot;&lt;เหตุผลภาษาไทย 1 ประโยคสั้นๆ&gt;&quot;, &quot;color&quot;: [&lt;ปุ่มแต่งสี 0-3 ปุ่ม&gt;], &quot;color_reason&quot;: &quot;&lt;เหตุผลการแต่งสี สั้นๆ&gt;&quot;, &quot;images&quot;: [{&quot;i&quot;: &lt;เลขรูป&gt;, &quot;box&quot;: [ymin, xmin, ymax, xmax], &quot;scene&quot;: &quot;&lt;ชื่อซีน&gt;&quot;, &quot;dup&quot;: &lt;เลขซีนที่ใช้แล้ว หรือ 0&gt;, &quot;no_product&quot;: &lt;true/false&gt;, &quot;score&quot;: &lt;0-100&gt;}], &quot;scene_note&quot;: &quot;&lt;ถ้าจอแบ่งหลายช่อง บอกสั้นๆ ว่าเทียบส่วนไหน ไม่มีให้เว้นว่าง&gt;&quot;}
+ปุ่มแต่งสีที่เลือกได้ มีแค่: &quot;Auto&quot; = ปรับสมดุลแสงสีอัตโนมัติ, &quot;Balance&quot; = แก้สีอมเหลือง/อมเขียว, &quot;Brighter&quot; = สว่างขึ้นเล็กน้อย, &quot;Darker&quot; = มืดลงเล็กน้อย · ถ้ารูปดีอยู่แล้วให้ color เป็น []
+ถ้ารูปทั้งหมดใช้ไม่ได้ ให้ confidence ต่ำกว่า 40</pre>
+<div class="card" style="margin-top:16px"><h3>ตัวอย่างที่โปรแกรมคุมกฎ (จากผลทดลองจริง)</h3>
+<p>จอ <b>DGT118</b>: Flash-Lite เสนอรูปที่ 2 ซึ่งเป็นซีน "ชายเดี่ยวครึ่งตัว ข้อความเสื้ออับเหงื่อ พื้นฟ้า" ที่ซ้ำกับจอ DGT067 โปรแกรมจึงเปลี่ยนเป็นรูปที่ 1 ตามกฎ "ห้ามใช้ซีนซ้ำถ้ายังมีซีนใหม่" และบันทึกไว้ในคอลัมน์ "โปรแกรมแก้ให้"</p></div>
+</div></section>
+
+<section id="test"><div class="wrap">
+<h2><small>ทดลองเทียบรุ่น AI · 7 ต.ค. 2026</small>เลือกรุ่นจากรูปจริง 12 จอ ไม่ได้เลือกจากความรู้สึก</h2>
+<p class="sub">ใช้ชุดทดลอง <code>ai_compare.py</code> ส่งรูปจริง 12 จอให้ 3 รุ่นด้วยคำสั่งเดียวกับโปรแกรม แล้ววัดผลจากการตอบจริง ค่าใช้จ่ายคิดจาก token ที่ Google นับกลับมา ไฟล์ดิบ: <a href="data/model_test_results.csv">CSV</a> · <a href="data/model_test_results.json">JSON</a></p>
+<div class="tbl"><table>
+<thead><tr><th>รุ่น</th><th>ตอบได้</th><th>วินาที/จอ</th><th>token/จอ</th><th>ค่าใช้จ่าย 12 จอ (USD)</th><th>ประมาณ 240 จอ (บาท)</th><th>โปรแกรมต้องแก้ให้</th></tr></thead>
+<tbody>
+<tr><td>3.5 Flash</td><td>12/12</td><td>69.3</td><td>13,286</td><td>0.4439</td><td>301.88</td><td>0</td></tr>
+<tr><td>3.6 Flash</td><td>1/12</td><td>12.1</td><td>8,052</td><td>0.0118</td><td>96.21</td><td>0</td></tr>
+<tr class="pick"><td>3.5 Flash-Lite ★</td><td>12/12</td><td>4.4</td><td>10,334</td><td>0.0496</td><td>33.75</td><td>4</td></tr>
+</tbody></table></div>
+<p class="sub" style="margin-top:14px">ผลที่ได้: Flash-Lite ตอบครบ 12/12 เร็วกว่า 3.5 Flash ราว 16 เท่า และถูกกว่าราว 9 เท่า ส่วน 3.6 Flash วันนั้น Google ยุ่ง (503) จนตอบได้จอเดียว จึงเลือก Flash-Lite เป็นรุ่นหลักและ 3.5 Flash เป็นรุ่นสำรอง ข้อเสียคือ Flash-Lite เลือกซีนซ้ำบ่อยกว่า (โปรแกรมต้องแก้ให้ 4 จอ) ซึ่งกฎในโปรแกรมรองรับไว้แล้ว</p>
+<details><summary>ดูผลรายจอของ Flash-Lite (12 จอ)</summary>
+<div class="tbl" style="margin-top:12px"><table>
+<thead><tr><th>จอ</th><th>AI เสนอ</th><th>ใช้จริง</th><th>มั่นใจ %</th><th>ซีน</th><th>ซ้ำกับจอ</th><th>โปรแกรม</th><th>วินาที</th><th>เหตุผลจาก AI</th></tr></thead>
+<tbody>
+<tr><td>DGT003</td><td>2</td><td>2</td><td>90</td><td>ขวดผลิตภัณฑ์ กลีบดอกไม้ พื้นหลังสีฟ้าเขียว</td><td></td><td></td><td>2.6</td><td class='why'>รูปที่ 2 แสดงภาพโฆษณาบนจอหลักได้ชัดเจนเต็มตาและองค์ประกอบครบถ้วนกว่า</td></tr>
+<tr><td>DGT005</td><td>1</td><td>1</td><td>90</td><td>ชาย 2 คนคู่ขวด พื้นหลังสีฟ้า</td><td></td><td></td><td>4.5</td><td class='why'>เลือกรูปที่ 1 เนื่องจากเป็นซีนที่ไม่ซ้ำกับจอก่อนหน้า และมีความคมชัดองค์ประกอบดีที่สุด</td></tr>
+<tr><td>DGT015</td><td>3</td><td>3</td><td>95</td><td>ขวดผลิตภัณฑ์ กลีบดอกไม้ พื้นหลังสีฟ้าเขียว</td><td>DGT003</td><td></td><td>4.1</td><td class='why'>ภาพที่ 3 แสดงขวดผลิตภัณฑ์กับกลีบดอกไม้ พื้นหลังสีฟ้าเขียว ซึ่งไม่ซ้ำกับซีนที่เคยใช้แล้ว</td></tr>
+<tr><td>DGT067</td><td>4</td><td>4</td><td>92</td><td>ชายเดี่ยวครึ่งตัว ข้อความเสื้ออับเหงื่อ พื้นฟ้า</td><td></td><td></td><td>5.4</td><td class='why'>ภาพคมชัด จอแสดงผลสมบูรณ์ และเป็นซีนใหม่ที่ไม่ซ้ำกับจอก่อนหน้า</td></tr>
+<tr><td>DGT118</td><td>2</td><td>1</td><td>92</td><td>ชายเดี่ยวครึ่งตัว ข้อความเสื้ออับเหงื่อ พื้นฟ้า</td><td>DGT067</td><td>แก้ให้</td><td>3.4</td><td class='why'>รูปที่ 2 แสดงภาพโฆษณาชัดเจน มุมมองสมบูรณ์ และเป็นซีนที่ไม่ซ้ำกับรายการก่อนหน้า</td></tr>
+<tr><td>DGT128</td><td>4</td><td>4</td><td>92</td><td>ชายเดี่ยวสูทสีเทา ข้อความซักผ้าหน้าฝน พื้นหลังครัว</td><td></td><td></td><td>3.7</td><td class='why'>เลือกรูปที่ 4 เนื่องจากเป็นซีนใหม่ที่ไม่ซ้ำกับซีนที่ใช้แล้ว และภาพมีความคมชัดองค์ประกอบดี</td></tr>
+<tr><td>DGT132</td><td>2</td><td>3</td><td>90</td><td>ชาย 2 คนคุยกัน พื้นหลังฟ้า</td><td></td><td>แก้ให้</td><td>9.9</td><td class='why'>รูปที่ 2 เป็นจอแบ่งสองส่วน โดยส่วนบนเป็นซีนใหม่ที่ไม่ซ้ำกับซีนที่เคยใช้แล้ว และมีความคมชัดองค์ประกอบดีที่สุด</td></tr>
+<tr><td>DGT164</td><td>3</td><td>3</td><td>92</td><td>ขวดผลิตภัณฑ์คู่ชาย 2 คน พื้นหลังฟ้าเขียว</td><td></td><td></td><td>4.9</td><td class='why'>เลือกรูปที่ 3 เนื่องจากเป็นซีนขวดผลิตภัณฑ์ที่ไม่ซ้ำกับซีนที่เคยใช้แล้ว และมีความคมชัดองค์ประกอบดีที่สุด</td></tr>
+<tr><td>DGT239-A</td><td>1</td><td>2</td><td>95</td><td>ชาย 2 คนคู่ขวด พื้นหลังสีฟ้า</td><td>DGT005</td><td>แก้ให้</td><td>3.7</td><td class='why'>รูปที่ 1 แสดงซีนขวดผลิตภัณฑ์กลีบดอกไม้ พื้นหลังสีฟ้าเขียว ซึ่งตรงกับซีนที่ใช้แล้ว 1 และซ้ำน้อยที่สุด พร้อมคุณภาพภาพถ่ายที่ชัดเจน</td></tr>
+<tr><td>DGT-A1046</td><td>2</td><td>2</td><td>90</td><td>ขวดผลิตภัณฑ์ กลีบดอกไม้ พื้นหลังสีฟ้าเขียว</td><td>DGT003</td><td></td><td>2.4</td><td class='why'>เลือกรูปที่ 2 เนื่องจากแสดงซีนที่ไม่ซ้ำกับซีนที่ใช้แล้ว และองค์ประกอบภาพชัดเจนดี</td></tr>
+<tr><td>DGT-A1054</td><td>2</td><td>3</td><td>92</td><td>ชายเดี่ยวสูทสีเทา ข้อความซักผ้าหน้าฝน พื้นหลังครัว</td><td>DGT128</td><td>แก้ให้</td><td>4.5</td><td class='why'>รูปที่ 2 แสดงภาพป้ายโฆษณาชัดเจน มุมมองสมบูรณ์ และเป็นซีนที่ไม่ซ้ำกับซีนที่ใช้แล้ว</td></tr>
+<tr><td>DGT-A1066</td><td>4</td><td>4</td><td>90</td><td>ขวดผลิตภัณฑ์คู่ชาย 2 คน พื้นหลังฟ้าเขียว</td><td>DGT164</td><td></td><td>3.7</td><td class='why'>รูปที่ 4 เห็นจอโฆษณาชัดเจน สินค้าครบถ้วน และเป็นซีนที่ไม่ซ้ำกับซีนที่ใช้แล้ว</td></tr>
+</tbody></table></div></details>
+<figure style="margin-top:16px"><img src="assets/model_test_pairs.jpg" alt="ตัวอย่างคู่รูปที่ 2 รุ่นตัดสินซีนต่างกัน" loading="lazy">
+<figcaption><span class="lbl real">รูปจริง</span>คู่ที่ 2 รุ่นตัดสินต่างกัน: คนเดิม ฉากเดิม แต่ท่าต่างกัน ตามกติกาของทีมนับเป็นซีนเดียวกัน ซึ่ง Lite ตัดสินตรงกับกติกา</figcaption></figure>
+</div></section>
+
+<section id="logs"><div class="wrap">
+<h2><small>LOG การรันจริง</small>พัฒนาจากปัญหาที่เจอในการใช้งานจริง</h2>
+<p class="sub">ทุกครั้งที่รัน AUTO FLOW จะเขียน <code>autoflow_log.csv</code> เองว่าแต่ละจอใครตัดสิน มั่นใจกี่ % และเพราะอะไร ด้านล่างเป็น log จริง 2 รอบแรก (งาน 12 จอ 53 รูป) ซึ่งยังมีปัญหา และเป็นที่มาของการแก้ในเวอร์ชันถัดไป</p>
+<div class="timeline">
+<div class="tl"><p class="d">รอบที่ 1<br><span style="color:var(--mute);font-weight:400">ก.ย. 2026</span></p><div><p>AI ตอบ 3 จอ ส่วนอีก 9 จอโปรแกรมส่งให้คนเลือก เพราะเรียก API ผิดรูปแบบ (POST data should be bytes) และรอนานจนหมดเวลา · เวลารวม 687.9 วินาที</p><p class="fix">แก้แล้ว: แปลงข้อมูลก่อนส่ง, เพิ่มเวลารอเป็น 150 วินาที และลองใหม่อัตโนมัติ</p></div></div>
+<div class="tl"><p class="d">รอบที่ 2<br><span style="color:var(--mute);font-weight:400">ก.ย. 2026</span></p><div><p>AI ตอบ 6 จอ (รวมผลที่จำไว้จากรอบก่อน) จากนั้นโควต้าฟรีของ 3.5 Flash หมด โปรแกรมจึงใช้เกณฑ์ในเครื่อง (ความคม + ความสว่าง) 5 จอ คนเลือก 1 จอ งานไม่หยุดกลางทาง · เวลารวม 581.3 วินาที</p><p class="fix">แก้แล้ว: เพิ่มรุ่นสำรองอัตโนมัติ และทดลองเทียบรุ่นจนย้ายไปใช้ Flash-Lite ซึ่งถูกและเร็วกว่า</p></div></div>
+<div class="tl"><p class="d">ทดลองเทียบรุ่น<br><span style="color:var(--mute);font-weight:400">7 ต.ค. 2026</span></p><div><p>Flash-Lite ตอบครบ 12/12 จอ เฉลี่ย 4.4 วินาทีต่อจอ (<a href="#test">ดูผล</a>)</p></div></div>
+<div class="tl"><p class="d">รอบเดโม 12 จอ</p><div><p>AI เลือกเอง 11 จอ คนเลือก 0 จอ ราว 21 วินาทีต่อจอ (<a href="#demo">ภาพหน้าจอ</a>)</p></div></div>
+</div>
+<details><summary>log รอบที่ 1 (12 จอ)</summary><div class="tbl" style="margin-top:12px"><table>
+<thead><tr><th>จอ</th><th>รูป</th><th>มั่นใจ %</th><th>ตัดสินโดย</th><th>เหตุผล / หมายเหตุ</th></tr></thead><tbody>
+<tr><td>DGT003</td><td>2</td><td>95</td><td><span class='tag ai'>AI</span></td><td class='why'>รูปที่ 2 แสดงภาพผลิตภัณฑ์บนจอหลักตรงกลางได้อย่างชัดเจนและสมบูรณ์</td></tr>
+<tr><td>DGT005</td><td>5</td><td>—</td><td><span class='tag human'>คน</span></td><td class='why'>AI ไม่ตอบ: POST data should be bytes, an iterable of bytes, or a file object. It</td></tr>
+<tr><td>DGT015</td><td>4</td><td>—</td><td><span class='tag human'>คน</span></td><td class='why'>AI ไม่ตอบ: POST data should be bytes, an iterable of bytes, or a file object. It</td></tr>
+<tr><td>DGT067</td><td>8</td><td>95</td><td><span class='tag ai'>AI</span></td><td class='why'>รูปที่ 1 เห็นจอโฆษณาขนาดใหญ่ชัดเจน ไม่มีสิ่งบดบังหน้าจอ และเป็นซีนใหม่ที่ไม่ซ้ำกับจอก่อนหน้า</td></tr>
+<tr><td>DGT118</td><td>2</td><td>95</td><td><span class='tag ai'>AI</span></td><td class='why'>รูปที่ 2 เห็นผลิตภัณฑ์บรีสชัดเจนและมีคุณภาพภาพดีที่สุด แม้ว่าจะเป็นซีนที่ซ้ำกับจอก่อนหน้า</td></tr>
+<tr><td>DGT128</td><td>5</td><td>—</td><td><span class='tag human'>คน</span></td><td class='why'>AI ไม่ตอบ: The read operation timed out</td></tr>
+<tr><td>DGT132</td><td>4</td><td>—</td><td><span class='tag human'>คน</span></td><td class='why'>AI ไม่ตอบ: POST data should be bytes, an iterable of bytes, or a file object. It</td></tr>
+<tr><td>DGT164</td><td>7</td><td>—</td><td><span class='tag human'>คน</span></td><td class='why'>AI ไม่ตอบ: The read operation timed out</td></tr>
+<tr><td>DGT239-A</td><td>2</td><td>—</td><td><span class='tag human'>คน</span></td><td class='why'>AI ไม่ตอบ: POST data should be bytes, an iterable of bytes, or a file object. It</td></tr>
+<tr><td>DGT-A1046</td><td>2</td><td>—</td><td><span class='tag human'>คน</span></td><td class='why'>AI ไม่ตอบ: POST data should be bytes, an iterable of bytes, or a file object. It</td></tr>
+<tr><td>DGT-A1054</td><td>8</td><td>—</td><td><span class='tag human'>คน</span></td><td class='why'>AI ไม่ตอบ: POST data should be bytes, an iterable of bytes, or a file object. It</td></tr>
+<tr><td>DGT-A1066</td><td>4</td><td>—</td><td><span class='tag human'>คน</span></td><td class='why'>AI ไม่ตอบ: POST data should be bytes, an iterable of bytes, or a file object. It</td></tr>
+</tbody></table></div></details>
+<details><summary>log รอบที่ 2 (12 จอ)</summary><div class="tbl" style="margin-top:12px"><table>
+<thead><tr><th>จอ</th><th>รูป</th><th>มั่นใจ %</th><th>ตัดสินโดย</th><th>เหตุผล / หมายเหตุ</th></tr></thead><tbody>
+<tr><td>DGT003</td><td>2</td><td>95</td><td><span class='tag ai'>ใช้ผลเดิม</span></td><td class='why'>รูปที่ 2 แสดงภาพผลิตภัณฑ์บนจอหลักตรงกลางได้อย่างชัดเจนและสมบูรณ์</td></tr>
+<tr><td>DGT005</td><td>5</td><td>90</td><td><span class='tag ai'>AI</span></td><td class='why'>รูปที่ 1 แสดงหน้าจอโฆษณาที่มีตัวผลิตภัณฑ์ชัดเจน เป็นซีนใหม่ที่ไม่ซ้ำกับจอก่อนหน้า และเห็นจอภาพครบถ้วนไม่มีสิ่งบดบัง</td></tr>
+<tr><td>DGT015</td><td>4</td><td>95</td><td><span class='tag ai'>AI</span></td><td class='why'>รูปที่ 1 เห็นหน้าจอโฆษณาชัดเจน ไม่มีสิ่งบดบัง และเป็นซีนใหม่ที่ยังไม่ถูกใช้งาน</td></tr>
+<tr><td>DGT067</td><td>8</td><td>95</td><td><span class='tag ai'>ใช้ผลเดิม</span></td><td class='why'>รูปที่ 1 เห็นจอโฆษณาขนาดใหญ่ชัดเจน ไม่มีสิ่งบดบังหน้าจอ และเป็นซีนใหม่ที่ไม่ซ้ำกับจอก่อนหน้า</td></tr>
+<tr><td>DGT118</td><td>2</td><td>95</td><td><span class='tag ai'>ใช้ผลเดิม</span></td><td class='why'>รูปที่ 2 เห็นผลิตภัณฑ์บรีสชัดเจนและมีคุณภาพภาพดีที่สุด แม้ว่าจะเป็นซีนที่ซ้ำกับจอก่อนหน้า</td></tr>
+<tr><td>DGT128</td><td>5</td><td>—</td><td><span class='tag human'>คน</span></td><td class='why'>AI ไม่ตอบ: Google ยุ่ง (503) This model is currently experiencing high demand. Sp</td></tr>
+<tr><td>DGT132</td><td>4</td><td>90</td><td><span class='tag ai'>AI</span></td><td class='why'>รูปที่ 1 เห็นหน้าจอโฆษณาชัดเจน แสดงซีนใหม่ที่ยังไม่เคยใช้ และองค์ประกอบภาพดีไม่มีสิ่งบดบังหน้าจอ</td></tr>
+<tr><td>DGT164</td><td>7</td><td>85</td><td><span class='tag local'>เกณฑ์ในเครื่อง</span></td><td class='why'>คมชัดที่สุดและแสงพอดีที่สุด (เกณฑ์ในเครื่อง ไม่ใช้ AI) · โควต้า AI หมด</td></tr>
+<tr><td>DGT239-A</td><td>2</td><td>87</td><td><span class='tag local'>เกณฑ์ในเครื่อง</span></td><td class='why'>คมชัดที่สุดและแสงพอดีที่สุด (เกณฑ์ในเครื่อง ไม่ใช้ AI) · โควต้า AI หมด (ไม่ได้เช็กซีน)</td></tr>
+<tr><td>DGT-A1046</td><td>2</td><td>86</td><td><span class='tag local'>เกณฑ์ในเครื่อง</span></td><td class='why'>คมชัดที่สุดและแสงพอดีที่สุด (เกณฑ์ในเครื่อง ไม่ใช้ AI) · โควต้า AI หมด (ไม่ได้เช็กซีน)</td></tr>
+<tr><td>DGT-A1054</td><td>8</td><td>85</td><td><span class='tag local'>เกณฑ์ในเครื่อง</span></td><td class='why'>คมชัดที่สุดและแสงพอดีที่สุด (เกณฑ์ในเครื่อง ไม่ใช้ AI) · โควต้า AI หมด (ไม่ได้เช็กซีน)</td></tr>
+<tr><td>DGT-A1066</td><td>4</td><td>85</td><td><span class='tag local'>เกณฑ์ในเครื่อง</span></td><td class='why'>คมชัดที่สุดและแสงพอดีที่สุด (เกณฑ์ในเครื่อง ไม่ใช้ AI) · โควต้า AI หมด (ไม่ได้เช็กซีน)</td></tr>
+</tbody></table></div></details>
+</div></section>
+
+<section id="impact"><div class="wrap">
+<h2><small>EXPECTED IMPACT · งาน 240 จอ</small>เวลาคนจาก ~7–8 ชั่วโมง เหลือ ~10–15 นาที</h2>
+<p class="sub">ทุกตัวเลขเขียนเป็นเวลาต่อหน่วย × จำนวน เพื่อให้คิดตามได้ เวลาต่อหน่วยมาจากการจับเวลาของทีม ส่วนขั้นดึงรูปแบบเดิมประมาณด้วยวิธี KLM (Card, Moran &amp; Newell 1980)</p>
+<div class="grid g3">
+<div class="card"><p class="c-orange" style="font-weight:700">แบบเดิม · ทำมือ</p><p class="num">~7–8 ชม.</p><ul><li>ดึงรูป + หาจอขาด 35–44 นาที</li><li>คัดรูป 20–30 วิ × 240</li><li>แต่งสี + Stamp ใน Photoshop ~1 นาที × 240</li><li>วางลงสไลด์ 15–20 วิ × 240</li><li>ลบเลขท้ายชื่อ 5 วิ × 240</li></ul></div>
+<div class="card"><p class="c-cyan" style="font-weight:700">InspectPilot · ยังไม่มี AI</p><p class="num">~20–25 นาที</p><ul><li>ดึงรูปอัตโนมัติ ~2 นาที</li><li>คนเลือกรูป + แต่งสี 3–5 วิ × 240</li><li>Stamp / สไลด์ / ชื่อไฟล์ อัตโนมัติ</li></ul></div>
+<div class="card" style="border-color:var(--amber)"><p class="c-amber" style="font-weight:700">AUTO FLOW · AI เลือกให้</p><p class="num">~10–15 นาที</p><ul><li>ตั้งค่าเริ่มงาน 3–5 นาที</li><li>ยืนยันจอที่ AI ไม่มั่นใจ ~13 จอ × 20–30 วิ</li><li>ตรวจผลตอนจบ 3–5 นาที</li><li>เครื่องทำเองอีก ~21 วิ × 240 ≈ 84 นาที (คนไปทำงานอื่นได้)</li></ul></div>
+</div>
+<div class="grid g3" style="margin-top:16px">
+<div class="card"><p>เวลาคนลดลง</p><p class="num c-green">~97%</p></div>
+<div class="card"><p>ค่า AI ต่องาน 240 จอ</p><p class="num c-amber">~33 บาท</p><p>~0.14 บาทต่อจอ คิดจาก token ที่วัดได้จริง (33.2 บาท/USD)</p></div>
+<div class="card"><p>คุณภาพ</p><p class="num c-pink">ทุกจอ</p><p>เช็กซีนไม่ซ้ำ ใช้เกณฑ์เดียวกัน และมีเหตุผลบันทึกใน CSV</p></div>
+</div>
+</div></section>
+
+<section id="files"><div class="wrap">
+<h2><small>ไฟล์ &amp; โค้ด</small>ดาวน์โหลดหลักฐานทั้งหมด</h2>
+<p class="sub">ไฟล์ทั้งหมดอยู่ใน repository นี้ ไม่มี API key และไม่มีที่อยู่ NAS ของบริษัท (โปรแกรมเก็บไว้ในไฟล์ตั้งค่าบนเครื่องเท่านั้น)</p>
+<div class="grid g2 files">
+<a href="code/auto_flow.py">auto_flow.py <span>ซอร์สโค้ด AUTO FLOW (ส่วน AI + Workflow)</span></a>
+<a href="data/workflow.json">workflow.json <span>Workflow 8 ขั้น · AI · กฎ · Human-in-the-loop</span></a>
+<a href="data/model_test_results.csv">model_test_results.csv <span>ผลทดลองเทียบรุ่น 12 จอ × 3 รุ่น</span></a>
+<a href="data/model_test_results.json">model_test_results.json <span>ข้อมูลเดียวกันแบบ JSON</span></a>
+<a href="data/run1_autoflow_log.csv">run1_autoflow_log.csv <span>log รันจริงรอบที่ 1 (มี .json คู่กัน)</span></a>
+<a href="data/run2_autoflow_log.csv">run2_autoflow_log.csv <span>log รันจริงรอบที่ 2 (มี .json คู่กัน)</span></a>
+<a href="code/csv_to_json.py">csv_to_json.py <span>สคริปต์แปลง log CSV เป็น JSON</span></a>
+<a href="assets/autoflow_simulation.mp4">autoflow_simulation.mp4 <span>วิดีโอจำลองขั้นตอน (~1 นาที)</span></a>
+</div>
+</div></section>
+
+<footer><div class="wrap">
+<p>AUTO FLOW · ส่วนหนึ่งของ InspectPilot · หน้านี้สร้างจากข้อมูลจริงของโปรแกรม อัปเดต ต.ค. 2026</p>
+<p>เครื่องมือ AI ที่ใช้: Google Gemini API (ตอนรันงาน) · Claude by Anthropic (ช่วยออกแบบ เขียนโค้ด และทำหน้านี้)</p>
+</div></footer>
+</body>
+</html>
